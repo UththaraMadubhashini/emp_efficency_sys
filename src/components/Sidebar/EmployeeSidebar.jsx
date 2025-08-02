@@ -12,50 +12,53 @@ export default function EmployeeSidebar() {
   const sidebarStyles = {
     width: '240px',
     height: '100vh',
-    background: '#f5f5f5',
+    background: '#6766c5',
     paddingTop: '1rem',
     position: 'fixed',
     overflowY: 'auto',
-    boxShadow: '2px 0 5px rgba(0,0,0,0.1)'
+    boxShadow: '2px 0 5px rgba(0,0,0,0.2)',
+    fontFamily: '"Segoe UI", sans-serif'
   };
 
   const logoStyles = {
     textAlign: 'center',
-    margin: '1rem 0'
+    margin: '20px 0 20px 0',
+    padding: '0 10px'
   };
 
   const logoImgStyles = {
-    width: '100px',
+    width: '120px',
     height: 'auto',
-    borderRadius: '8px',
-    marginTop: '-50px',
-    marginBottom: '-40px',
+    borderRadius: '12px',
     objectFit: 'contain',
+    marginTop: '-30px',
+    marginBottom: '-10px'
   };
 
   const navLinkStyles = {
     display: 'flex',
     alignItems: 'center',
-    padding: '10px 16px',
-    margin: '8px 12px',
+    padding: '12px 18px',
+    margin: '10px 14px',
     textDecoration: 'none',
-    color: '#333',
-    border: '2px solid #007FFF',
+    color: '#000000',
+    fontWeight: 600,
+    fontSize: '15px',
+    backgroundColor: '#67BCE0',
     borderRadius: '8px',
+    border: '3px solid white',
     transition: '0.3s ease',
-    fontWeight: 500,
-    backgroundColor: '#fff',
-    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)'
   };
 
   const activeLinkStyles = {
-    backgroundColor: '#007FFF',
-    color: 'white',
-    borderColor: '#005fcc'
+    backgroundColor: '#0D07C0',
+    color: '#ffffff',
+    borderColor: '#000000',
   };
 
   const iconStyles = {
-    marginRight: '8px'
+    marginRight: '10px',
+    fontSize: '20px'
   };
 
   return (
@@ -67,7 +70,11 @@ export default function EmployeeSidebar() {
         <NavLink
           to="/"
           end
-          style={({ isActive }) => isActive ? { ...navLinkStyles, ...activeLinkStyles } : navLinkStyles}
+          style={({ isActive }) =>
+            isActive
+              ? { ...navLinkStyles, ...activeLinkStyles }
+              : navLinkStyles
+          }
         >
           <DashboardIcon style={iconStyles} />
           Dashboard
@@ -75,7 +82,11 @@ export default function EmployeeSidebar() {
 
         <NavLink
           to="/profile"
-          style={({ isActive }) => isActive ? { ...navLinkStyles, ...activeLinkStyles } : navLinkStyles}
+          style={({ isActive }) =>
+            isActive
+              ? { ...navLinkStyles, ...activeLinkStyles }
+              : navLinkStyles
+          }
         >
           <PersonIcon style={iconStyles} />
           Profile
@@ -83,7 +94,11 @@ export default function EmployeeSidebar() {
 
         <NavLink
           to="/attendance"
-          style={({ isActive }) => isActive ? { ...navLinkStyles, ...activeLinkStyles } : navLinkStyles}
+          style={({ isActive }) =>
+            isActive
+              ? { ...navLinkStyles, ...activeLinkStyles }
+              : navLinkStyles
+          }
         >
           <CalendarMonthIcon style={iconStyles} />
           Attendance
@@ -91,7 +106,11 @@ export default function EmployeeSidebar() {
 
         <NavLink
           to="/performance"
-          style={({ isActive }) => isActive ? { ...navLinkStyles, ...activeLinkStyles } : navLinkStyles}
+          style={({ isActive }) =>
+            isActive
+              ? { ...navLinkStyles, ...activeLinkStyles }
+              : navLinkStyles
+          }
         >
           <BarChartIcon style={iconStyles} />
           Performance
@@ -99,7 +118,11 @@ export default function EmployeeSidebar() {
 
         <NavLink
           to="/task"
-          style={({ isActive }) => isActive ? { ...navLinkStyles, ...activeLinkStyles } : navLinkStyles}
+          style={({ isActive }) =>
+            isActive
+              ? { ...navLinkStyles, ...activeLinkStyles }
+              : navLinkStyles
+          }
         >
           <AssignmentIcon style={iconStyles} />
           Task
@@ -107,7 +130,11 @@ export default function EmployeeSidebar() {
 
         <NavLink
           to="/equipment"
-          style={({ isActive }) => isActive ? { ...navLinkStyles, ...activeLinkStyles } : navLinkStyles}
+          style={({ isActive }) =>
+            isActive
+              ? { ...navLinkStyles, ...activeLinkStyles }
+              : navLinkStyles
+          }
         >
           <ConstructionIcon style={iconStyles} />
           Equipment Identify
