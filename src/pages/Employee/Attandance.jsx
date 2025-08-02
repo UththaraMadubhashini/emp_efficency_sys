@@ -114,13 +114,7 @@ export default function Attendance() {
 
   return (
     <Box p={4} bgcolor="#f0f2f5" minHeight="100vh">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-        <Typography variant="h6">Employee - Employee Name</Typography>
-        <Box>
-          <span style={{ fontSize: "1.5rem", marginRight: 10 }}>🔔</span>
-          <span style={{ fontSize: "1.5rem" }}>👤</span>
-        </Box>
-      </Box>
+      
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>

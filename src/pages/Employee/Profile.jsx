@@ -132,14 +132,6 @@ export default function EmployeeProfileForm() {
           boxShadow: 3,
         }}
       >
-        {/* Header */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h6">Employee - Employee Name</Typography>
-          <Box>
-            <IconButton>🔔</IconButton>
-            <IconButton>👤</IconButton>
-          </Box>
-        </Box>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           {/* Upload Photo */}
