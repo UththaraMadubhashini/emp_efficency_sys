@@ -1,0 +1,51 @@
+/* src/components/Sidebar/sidebar.css */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 240px;
+  background-color: #4C50AF;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.logo {
+  background-color: #6ECEDA;
+  color: black;
+  text-align: center;
+  padding: 20px;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 12px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 6px;
+  background-color: #6ECEDA;
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.nav-link.active {
+  background-color: white;
+  color: #4C50AF;
+}
+
+.icon {
+  font-size: 1.2rem;
+}
