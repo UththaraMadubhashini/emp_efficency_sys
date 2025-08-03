@@ -67,12 +67,12 @@ export default function EmployeeSidebar() {
       >
         <nav>
           {[
-            { to: '/', label: 'Dashboard', icon: <DashboardIcon /> },
-            { to: '/profile', label: 'Profile', icon: <PersonIcon /> },
-            { to: '/attendance', label: 'Attendance', icon: <CalendarMonthIcon /> },
-            { to: '/performance', label: 'Performance', icon: <BarChartIcon /> },
-            { to: '/task', label: 'Task', icon: <AssignmentIcon /> },
-            { to: '/equipment', label: 'Equipment Identify', icon: <ConstructionIcon /> },
+            { to: '/employee', label: 'Dashboard', icon: <DashboardIcon /> },
+            { to: '/employee/profile', label: 'Profile', icon: <PersonIcon /> },
+            { to: '/employee/attendance', label: 'Attendance', icon: <CalendarMonthIcon /> },
+            { to: '/employee/performance', label: 'Performance', icon: <BarChartIcon /> },
+            { to: '/employee/task', label: 'Task', icon: <AssignmentIcon /> },
+            { to: '/employee/equipment', label: 'Equipment Identify', icon: <ConstructionIcon /> },
           ].map(({ to, label, icon }) => (
             <NavLink
               key={to}
@@ -94,13 +94,12 @@ export default function EmployeeSidebar() {
                 transition: '0.3s ease',
               })}
             >
-              <Box sx={{ minWidth: '24px',      // reserve consistent space for icon
-      display: 'flex',
-      justifyContent: 'center',
-      marginRight: '10px',
-      fontSize: '20px',
-      lineHeight: 1, }}>
-                
+              <Box sx={{ minWidth: '24px',
+                display: 'flex',
+                justifyContent: 'center',
+                marginRight: '10px',
+                fontSize: '20px',
+                lineHeight: 1, }}>
                 {icon}</Box>
               {label}
             </NavLink>
