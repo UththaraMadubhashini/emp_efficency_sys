@@ -36,18 +36,33 @@ const Dashboard = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 2, gap: 1, marginBottom:5, marginTop:-5 }}>
+        <Box
+          sx={{
+            width: 10,
+            height: 10,
+            bgcolor: '#17F255',
+            borderRadius: '50%',
+          }}
+        />
         <Button
           variant="outlined"
           onClick={handleCheckIn}
-          sx={{ borderRadius: 5, px: 3, borderColor: '#000', color: '#000', backgroundColor: '#78d1ec' }}
+          sx={{
+            bgcolor: "#67BCE0",
+            ":hover": { bgcolor: "#ffffff" },
+            borderRadius: "60px",
+            border: "3px solid #000000",
+            color: "#000000",
+            textTransform: "none",
+            boxShadow: 2,
+            width: { xs: "100%", sm: "auto" },
+          }}
         >
           CheckIN
         </Button>
-        <Box
-          sx={{ width: 10, height: 10, bgcolor: 'green', borderRadius: '50%', ml: 1, mt: 2 }}
-        ></Box>
       </Box>
+
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} md={4}>
           <Card sx={{ border: '2px solid #67BCE0' }}>

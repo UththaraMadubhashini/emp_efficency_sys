@@ -233,7 +233,15 @@ export default function EmployeeProfileForm() {
 
           {/* Submit Button */}
           <Box textAlign="right">
-            <Button type="submit" variant="contained" sx={{ backgroundColor: "#6ECEDA", borderRadius: 2, width: 100 }}>
+            <Button type="submit" variant="contained" sx={{ bgcolor: "#67BCE0",
+              ":hover": { bgcolor: "#ffffff" },
+              borderRadius: "60px",
+              border: "3px solid #000000",
+              color: "#000000",
+              textTransform: "none",
+              boxShadow: 2,
+              width: { xs: "100%", sm: "auto" },
+              marginTop: '20px' }}>
               OK
             </Button>
           </Box>

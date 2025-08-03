@@ -141,9 +141,13 @@ export default function Attendance() {
               variant="contained"
               sx={{
                 bgcolor: "#67BCE0",
-                color: "#fff",
-                borderRadius: "60px",
-                border: "3px solid #000000",
+              ":hover": { bgcolor: "#ffffff" },
+              borderRadius: "60px",
+              border: "3px solid #000000",
+              color: "#000000",
+              textTransform: "none",
+              boxShadow: 2,
+              width: { xs: "100%", sm: "auto" },
                 flex: 1,
               }}
               onClick={() => navigate("/leave")}
@@ -154,11 +158,15 @@ export default function Attendance() {
             <Button
               variant="outlined"
               sx={{
-                borderColor: "#000000",
-                color: "#67BCE0",
-                borderRadius: "60px",
-                borderWidth: "3px",
-                flex: 1,
+                bgcolor: "#67BCE0",
+              ":hover": { bgcolor: "#ffffff" },
+              borderRadius: "60px",
+              border: "3px solid #000000",
+              color: "#000000",
+              textTransform: "none",
+              boxShadow: 2,
+              width: { xs: "100%", sm: "auto" },
+              flex: 1,
               }}
               onClick={handleCheckOut}
             >
@@ -194,13 +202,16 @@ export default function Attendance() {
           <Button
             variant="contained"
             sx={{
-              mt: 2,
               bgcolor: "#67BCE0",
-              color: "#fff",
+              ":hover": { bgcolor: "#ffffff" },
               borderRadius: "60px",
               border: "3px solid #000000",
-              width: isMobile ? "100%" : "200px",
-            }}
+              color: "#000000",
+              textTransform: "none",
+              boxShadow: 2,
+              width: { xs: "100%", sm: "auto" },
+              marginTop: '20px'
+                  }}
           >
             Cancel
           </Button>
