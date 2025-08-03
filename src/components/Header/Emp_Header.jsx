@@ -1,7 +1,14 @@
-export default function Emp_Header() {
+import { Box, Typography } from "@mui/material";
+
+// Header Component
+function Emp_Header() {
   return (
-    <header className="bg-gray-100 px-4 py-3 shadow">
-      <h1 className="text-xl font-bold">Employee Dashboard</h1>
-    </header>
+    <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+      <Typography variant="h6">Employee - Employee Name</Typography>
+      <Box>
+        <span style={{ fontSize: "1.5rem", marginRight: 10 }}>🔔</span>
+        <span style={{ fontSize: "1.5rem" }}>👤</span>
+      </Box>
+    </Box>
   );
 }

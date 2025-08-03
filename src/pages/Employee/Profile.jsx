@@ -13,10 +13,14 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Snackbar,
+  Alert,
+  useMediaQuery
 } from "@mui/material";
 import { Edit, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTheme } from "@mui/material/styles";
 
 export default function EmployeeProfileForm() {
   const [photo, setPhoto] = useState(null);
@@ -25,13 +29,16 @@ export default function EmployeeProfileForm() {
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
-    getValues,
   } = useForm();
 
   const handlePhotoChange = (e) => {
@@ -49,10 +56,12 @@ export default function EmployeeProfileForm() {
   const handleEditSave = () => {
     setPhoto(tempPhoto);
     setOpenEditDialog(false);
+    setSnackbar({ open: true, message: "Profile photo updated successfully." });
   };
 
   const onSubmit = (data) => {
     console.log("Form Submitted:", data);
+    setSnackbar({ open: true, message: "Profile details submitted successfully." });
   };
 
   return (
@@ -114,6 +123,7 @@ export default function EmployeeProfileForm() {
                 setValue("password", data.newPassword);
                 setIsEditingPassword(true);
                 setOpenPasswordDialog(false);
+                setSnackbar({ open: true, message: "Password updated successfully." });
               }
             })}
           >
@@ -122,72 +132,55 @@ export default function EmployeeProfileForm() {
         </DialogActions>
       </Dialog>
 
-      {/* Main Form Card */}
-      <Box
-        sx={{
-          maxWidth: "800px",
-          mx: "auto",
-          p: 4,
-          borderRadius: 2,
-          boxShadow: 3,
-        }}
-      >
-        {/* Header */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h6">Employee - Employee Name</Typography>
-          <Box>
-            <IconButton>🔔</IconButton>
-            <IconButton>👤</IconButton>
-          </Box>
-        </Box>
-
+      {/* Form Body */}
+      <Box sx={{ maxWidth: 600, mx: "auto", p: 2 }}>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          {/* Upload Photo */}
-          <Card sx={{ p: 3, mb: 4 }}>
-            <Grid container spacing={2} alignItems="center">
+          {/* Photo Upload */}
+          <Card sx={{ backgroundColor: "#e5f6fd", p: 2, mb: 2 }}>
+            <Grid container spacing={2} alignItems="center" direction={isMobile ? "column" : "row"}>
               <Grid item>
-                <Avatar
-                  src={photo}
-                  sx={{ width: 80, height: 80, border: "2px solid #000" }}
+                <Avatar src={photo} sx={{ width: 60, height: 60 }} />
+              </Grid>
+              <Grid item xs>
+                <Typography>Upload Photo</Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  value={photo || ""}
+                  InputProps={{ readOnly: true }}
+                  sx={{ backgroundColor: "#fff" }}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography fontWeight={500}>Upload Photo</Typography>
-              </Grid>
               <Grid item>
-                <IconButton onClick={handleEditClick}>
+                <IconButton onClick={handleEditClick} sx={{ mt: isMobile ? 0 : 2 }}>
                   <Edit />
                 </IconButton>
               </Grid>
             </Grid>
           </Card>
 
-          {/* Personal Details */}
-          <Card sx={{ backgroundColor: "#e5f6fd", p: 3, mb: 4 }}>
-            <Typography variant="h6" gutterBottom>Personal Details</Typography>
+          {/* Employee Details */}
+          <Card sx={{ backgroundColor: "#e5f6fd", p: 2, mb: 2 }}>
+            <Typography fontWeight="bold" mb={1}>Employee Details</Typography>
             <Divider sx={{ mb: 2 }} />
-            <Grid container spacing={2}>
-              {[
-                { name: "employeeId", label: "Employee ID" },
-                { name: "fullName", label: "Full Name" },
-                { name: "address", label: "Address" },
-                { name: "tel", label: "Tel" },
-                { name: "email", label: "Email" },
-              ].map((field, idx) => (
-                <Grid item xs={12} sm={6} key={idx}>
-                  <TextField
-                    label={field.label}
-                    fullWidth
-                    size="small"
-                    InputProps={{ readOnly: true }}
-                    {...register(field.name)}
-                  />
-                </Grid>
-              ))}
-
-              {/* Change Password */}
-              <Grid item xs={12} sm={6}>
-                <Box display="flex" alignItems="center" gap={1}>
+            <Grid container direction="column" spacing={2}>
+              <Grid item>
+                <TextField label="Employee ID" fullWidth size="small" {...register("employeeId", { required: true })} />
+              </Grid>
+              <Grid item>
+                <TextField label="Full Name" fullWidth size="small" {...register("fullName")} />
+              </Grid>
+              <Grid item>
+                <TextField label="Address" fullWidth size="small" {...register("address")} />
+              </Grid>
+              <Grid item>
+                <TextField label="Telephone" fullWidth size="small" {...register("tel")} />
+              </Grid>
+              <Grid item>
+                <TextField label="Email" fullWidth size="small" {...register("email")} />
+              </Grid>
+              <Grid item>
+                <Box display="flex" alignItems="center">
                   <TextField
                     label="Change Password"
                     type={showPassword ? "text" : "password"}
@@ -195,6 +188,7 @@ export default function EmployeeProfileForm() {
                     size="small"
                     InputProps={{
                       readOnly: !isEditingPassword,
+                      sx: { backgroundColor: "#fff" },
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton onClick={() => setShowPassword(!showPassword)}>
@@ -214,32 +208,23 @@ export default function EmployeeProfileForm() {
           </Card>
 
           {/* Company Details */}
-          <Card sx={{ backgroundColor: "#e5f6fd", p: 3 }}>
-            <Typography variant="h6" gutterBottom>Company Details</Typography>
+          <Card sx={{ backgroundColor: "#e5f6fd", p: 2, mb: 2 }}>
+            <Typography fontWeight="bold" mb={1}>Company Details</Typography>
             <Divider sx={{ mb: 2 }} />
-            <Grid container spacing={2}>
-              {[
-                { name: "department", label: "Department" },
-                { name: "designation", label: "Designation" },
-              ].map((field, idx) => (
-                <Grid item xs={12} sm={6} key={idx}>
-                  <TextField
-                    label={field.label}
-                    fullWidth
-                    size="small"
-                    InputProps={{ readOnly: true }}
-                    {...register(field.name)}
-                  />
-                </Grid>
-              ))}
-              <Grid item xs={12} sm={6}>
+            <Grid container direction="column" spacing={2}>
+              <Grid item>
+                <TextField label="Department" fullWidth size="small" {...register("department")} />
+              </Grid>
+              <Grid item>
+                <TextField label="Designation" fullWidth size="small" {...register("designation")} />
+              </Grid>
+              <Grid item>
                 <TextField
                   label="Joining Date"
                   type="date"
                   fullWidth
                   size="small"
                   InputLabelProps={{ shrink: true }}
-                  InputProps={{ readOnly: true }}
                   {...register("joiningDate")}
                 />
               </Grid>
@@ -247,31 +232,16 @@ export default function EmployeeProfileForm() {
           </Card>
 
           {/* Submit Button */}
-          <Box textAlign="right" mt={4}>
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{
-                backgroundColor: "#6ECEDA",
-                color: "#000",
-                borderRadius: "20px",
-                width: 100,
-                "&:hover": { backgroundColor: "#56c0cc" },
-              }}
-            >
+          <Box textAlign="right">
+            <Button type="submit" variant="contained" sx={{ backgroundColor: "#6ECEDA", borderRadius: 2, width: 100 }}>
               OK
             </Button>
           </Box>
         </form>
       </Box>
 
-      {/* Photo Upload Dialog */}
-      <Dialog
-        open={openEditDialog}
-        onClose={() => setOpenEditDialog(false)}
-        maxWidth="xs"
-        fullWidth
-      >
+      {/* Profile Photo Edit Dialog */}
+      <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Edit Profile Photo</DialogTitle>
         <DialogContent dividers>
           <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
@@ -287,6 +257,11 @@ export default function EmployeeProfileForm() {
           <Button variant="contained" onClick={handleEditSave}>Save</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ open: false, message: "" })}>
+        <Alert severity="success" sx={{ width: '100%' }}>{snackbar.message}</Alert>
+      </Snackbar>
     </Box>
   );
 }

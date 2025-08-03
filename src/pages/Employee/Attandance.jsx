@@ -13,6 +13,8 @@ import {
   TableHead,
   TableRow,
   Paper,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -22,6 +24,8 @@ export default function Attendance() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [attendanceData, setAttendanceData] = useState([]);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const today = new Date();
   const isSameDay = (d1, d2) =>
@@ -113,18 +117,16 @@ export default function Attendance() {
   };
 
   return (
-    <Box p={4} bgcolor="#f0f2f5" minHeight="100vh">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-        <Typography variant="h6">Employee - Employee Name</Typography>
-        <Box>
-          <span style={{ fontSize: "1.5rem", marginRight: 10 }}>🔔</span>
-          <span style={{ fontSize: "1.5rem" }}>👤</span>
-        </Box>
-      </Box>
-
+    <Box p={isMobile ? 2 : 4} minHeight="100vh">
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
-          <Card sx={{ p: 2 }}>
+          <Card
+            sx={{
+              p: 2,
+              border: "3px solid #67BCE0",
+              borderRadius: "10px",
+            }}
+          >
             <Calendar
               onClickDay={handleDateChange}
               value={selectedDate}
@@ -134,17 +136,30 @@ export default function Attendance() {
             />
           </Card>
 
-          <Box mt={2} display="flex" gap={1}>
+          <Box mt={2} display="flex" flexDirection={isMobile ? "column" : "row"} gap={2}>
             <Button
               variant="contained"
-              sx={{ bgcolor: "#007FFF", color: "#fff" }}
+              sx={{
+                bgcolor: "#67BCE0",
+                color: "#fff",
+                borderRadius: "60px",
+                border: "3px solid #000000",
+                flex: 1,
+              }}
               onClick={() => navigate("/leave")}
             >
               Leave Request
             </Button>
+
             <Button
               variant="outlined"
-              sx={{ borderColor: "#007FFF", color: "#007FFF" }}
+              sx={{
+                borderColor: "#000000",
+                color: "#67BCE0",
+                borderRadius: "60px",
+                borderWidth: "3px",
+                flex: 1,
+              }}
               onClick={handleCheckOut}
             >
               Check-Out
@@ -177,8 +192,15 @@ export default function Attendance() {
           </TableContainer>
 
           <Button
-            variant="outlined"
-            sx={{ mt: 2, borderColor: "#007FFF", color: "#007FFF" }}
+            variant="contained"
+            sx={{
+              mt: 2,
+              bgcolor: "#67BCE0",
+              color: "#fff",
+              borderRadius: "60px",
+              border: "3px solid #000000",
+              width: isMobile ? "100%" : "200px",
+            }}
           >
             Cancel
           </Button>
