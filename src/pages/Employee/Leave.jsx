@@ -43,8 +43,7 @@ export default function Leave() {
     },
   ]);
 
-  // "employee" or "HR"
-  const userRole = "HR"; // change to "employee" to test role-based UI
+  const userRole = "HR";
 
   const [formData, setFormData] = useState({
     employeeId: "",
@@ -81,7 +80,6 @@ export default function Leave() {
     setOpenDialog(false);
     toast.success("Leave request submitted");
 
-    // Reset form
     setFormData({
       employeeId: "",
       leaveType: "",
@@ -100,236 +98,272 @@ export default function Leave() {
 
   return (
     <Box p={4} display="flex" justifyContent="center">
-        <Box maxWidth="1200px" width="100%">
-      <Grid container spacing={4} justifyContent="center">
-        {/* Calendar Section */}
-        <Grid item xs={12} md={4}>
-          <Card sx={{ p: 2 }}>
-            <Calendar onClickDay={handleDateClick} value={selectedDate} />
-          </Card>
-        </Grid>
+      <Box maxWidth="1200px" width="100%">
+        <Grid container spacing={4} justifyContent="center">
+          {/* Calendar Section */}
+          <Grid item xs={12} md={4}>
+            <Card sx={{ p: 2, border: "3px solid #67BCE0", borderRadius: "12px" }}>
+              <Calendar onClickDay={handleDateClick} value={selectedDate} />
+            </Card>
+          </Grid>
 
-        {/* Leave Table Section */}
-        <Grid item xs={12} md={8}>
-          <Typography variant="h6" gutterBottom>
-            All Leaves
-          </Typography>
-
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead sx={{ background: "#B39DDB", justifyContent: "center", }}>
-                <TableRow>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Leave Type</TableCell>
-                  <TableCell>Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {leaveList.map((leave, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell>{leave.date}</TableCell>
-                    <TableCell>{leave.leaveType}</TableCell>
-                    <TableCell>
+          {/* Leave Table Section */}
+          <Grid item xs={12} md={8}>
+            <Typography variant="h6" gutterBottom>
+              All Leaves
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead sx={{ background: "#cfe2f3" }}>
+                  <TableRow>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Leave Type</TableCell>
+                    <TableCell>Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {leaveList.map((leave, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell>{leave.date}</TableCell>
+                      <TableCell>{leave.leaveType}</TableCell>
+                      <TableCell>
                         {leave.status === "Pending" && userRole === "HR" ? (
-                            <Box display="flex" gap={1}>
+                          <Box display="flex" gap={1}>
                             <Button
-                                size="small"
-                                color="success"
-                                variant="outlined"
-                                onClick={() => handleStatusChange(idx, "Accepted")}
+                              size="small"
+                              color="success"
+                              variant="outlined"
+                              onClick={() => handleStatusChange(idx, "Accepted")}
                             >
-                                Accept
+                              Accept
                             </Button>
                             <Button
-                                size="small"
-                                color="error"
-                                variant="outlined"
-                                onClick={() => handleStatusChange(idx, "Rejected")}
+                              size="small"
+                              color="error"
+                              variant="outlined"
+                              onClick={() => handleStatusChange(idx, "Rejected")}
                             >
-                                Reject
+                              Reject
                             </Button>
-                            </Box>
+                          </Box>
                         ) : (
-                            <Typography
+                          <Typography
                             variant="body2"
                             sx={{
-                                color:
+                              color:
                                 leave.status === "Accepted"
-                                    ? "green"
-                                    : leave.status === "Rejected"
-                                    ? "red"
-                                    : "orange",
+                                  ? "green"
+                                  : leave.status === "Rejected"
+                                  ? "red"
+                                  : "orange",
                             }}
-                            >
+                          >
                             {leave.status}
-                            </Typography>
+                          </Typography>
                         )}
-                        </TableCell>
-
-
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
         </Grid>
-      </Grid>
 
-      {/* Leave Request Dialog */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
-        <DialogTitle
+        {/* Leave Request Dialog */}
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
+          <DialogTitle
             sx={{
-            bgcolor: "#512da8",
-            color: "#fff",
-            textAlign: "center",
-            fontWeight: "bold",
-            fontSize: "1.25rem",
-            py: 2,
+              color: "#67BCE0",
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: "1.25rem",
+              py: 2,
             }}
-        >
+          >
             Leave Request Form
-        </DialogTitle>
-        
-        <DialogContent sx={{ bgcolor: "#fefefe", p: 3 }}>
-            <br/>
+          </DialogTitle>
+
+          <DialogContent sx={{ p: 3 }}>
+            <Box
+              sx={{
+                boxShadow: 3,
+                p: 3,
+                backgroundColor: "#ffffff",
+                border: "5px solid #67BCE0",
+                borderRadius: "20px",
+              }}
+            >
+              {/* Section 1: Employee Info */}
+              <Typography variant="subtitle2" color="primary" gutterBottom>
+                Employee Information
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label={
+                      <Box component="span">
+                        Employee ID
+                        <Box component="span" sx={{ color: "red" }}>
+                          *
+                        </Box>
+                      </Box>
+                    }
+                    name="employeeId"
+                    value={formData.employeeId}
+                    onChange={handleInputChange}
+                    variant="outlined"
+                    sx={{ bgcolor: "#fff" }}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label={
+                      <Box component="span">
+                        Designation
+                        <Box component="span" sx={{ color: "red" }}>
+                          *
+                        </Box>
+                      </Box>
+                    }
+                    name="designation"
+                    value={formData.designation}
+                    onChange={handleInputChange}
+                    variant="outlined"
+                    sx={{ bgcolor: "#fff" }}
+                  />
+                </Grid>
+              </Grid>
+
+              {/* Section 2: Leave Details */}
+              <Typography variant="subtitle2" color="primary" sx={{ mt: 4 }} gutterBottom>
+                Leave Details
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+
+              <Grid item xs={12}>
+                <FormControl fullWidth sx={{ bgcolor: "#fff" }}>
+                  <InputLabel id="leaveType-label">
+                      Leave Type <Box component="span" sx={{ color: "red", display: "inline" }}>*</Box>
+                    </InputLabel>
+                    <Select
+                      id="leaveType"
+                      labelId="leaveType-label"
+                      name="leaveType"
+                      value={formData.leaveType}
+                      onChange={handleInputChange}
+                      label="Leave Type"
+                    >
+                    <MenuItem value="Sick Off">Sick Off</MenuItem>
+                    <MenuItem value="Half Day">Half Day</MenuItem>
+                    <MenuItem value="Morning">Morning</MenuItem>
+                    <MenuItem value="Evening">Evening</MenuItem>
+                    <MenuItem value="Unpaid">Unpaid</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              {/* Section 3: Date Range */}
+              <Typography variant="subtitle2" color="primary" sx={{ mt: 4 }} gutterBottom>
+                Leave Duration
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label={
+                      <Box component="span">
+                        Start Date
+                        <Box component="span" sx={{ color: "red", display: "inline" }}>
+                          *
+                        </Box>
+                      </Box>
+                    }
+                    type="date"
+                    name="startDate"
+                    InputLabelProps={{ shrink: true }}
+                    value={formData.startDate}
+                    onChange={handleInputChange}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                      fullWidth
+                      label={
+                        <Box component="span">
+                          Start Date
+                          <Box component="span" sx={{ color: "red", display: "inline" }}>
+                            *
+                          </Box>
+                        </Box>
+                      }
+                      type="date"
+                      name="startDate"
+                      InputLabelProps={{ shrink: true }}
+                      value={formData.startDate}
+                      onChange={handleInputChange}
+                    />
+                </Grid>
+              </Grid>
+            </Box>
+          </DialogContent>
+
+          <DialogActions sx={{ px: 3, pb: 2 }}>
   <Box
     sx={{
-      borderRadius: 2,
-      boxShadow: 3,
-      p: 3,
-      backgroundColor: "#ffffff",
-      border: "1px solid #e0e0e0",
+      display: "flex",
+      flexDirection: { xs: "column", sm: "row" },
+      gap: 2,
+      width: "100%",
+      justifyContent: "flex-end",
     }}
   >
-    {/* Section 1: Employee Information */}
-    <Typography variant="subtitle2" color="primary" gutterBottom>
-      Employee Information
-    </Typography>
-    <Divider sx={{ mb: 2 }} />
+    <Button
+      variant="contained"
+      onClick={handleSubmit}
+      sx={{
+        bgcolor: "#67BCE0",
+        ":hover": { bgcolor: "#ffffff" },
+        borderRadius: "60px",
+        border: "3px solid #000000",
+        color: "#000000",
+        textTransform: "none",
+        boxShadow: 2,
+        width: { xs: "100%", sm: "auto" },
+      }}
+    >
+      Submit
+    </Button>
 
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          fullWidth
-          label="Employee ID"
-          name="employeeId"
-          value={formData.employeeId}
-          onChange={handleInputChange}
-          variant="outlined"
-          required
-          sx={{ bgcolor: "#f5f5f5" }}
-        />
-      </Grid>
-
-      <Grid item xs={12} sm={6}>
-        <TextField
-          fullWidth
-          label="Designation"
-          name="designation"
-          value={formData.designation}
-          onChange={handleInputChange}
-          variant="outlined"
-          required
-          sx={{ bgcolor: "#f5f5f5" }}
-        />
-      </Grid>
-    </Grid>
-
-    {/* Section 2: Leave Details */}
-    <Typography variant="subtitle2" color="primary" sx={{ mt: 4 }} gutterBottom>
-      Leave Details
-    </Typography>
-    <Divider sx={{ mb: 2 }} />
-
-        <Grid item xs={12}>
-        <Box sx={{ maxWidth: 200, maxHeight: 100 }}> 
-        <FormControl
-        fullWidth
-        required
-        size="small"
-        sx={{ bgcolor: "#f5f5f5" }}
-        >
-        <InputLabel id="leaveType-label">Leave Type</InputLabel>
-        <Select
-            id="leaveType"
-            labelId="leaveType-label"
-            name="leaveType"
-            value={formData.leaveType}
-            onChange={handleInputChange}
-            label="Leave Type"
-        >
-            <MenuItem value="Sick Off">Sick Off</MenuItem>
-            <MenuItem value="Unpaid">Unpaid</MenuItem>
-            <MenuItem value="Half Day">Half Day</MenuItem>
-            <MenuItem value="Morning">Morning</MenuItem>
-            <MenuItem value="Evening">Evening</MenuItem>
-        </Select>
-        </FormControl>
-    </Box>
-    </Grid>
-
-    {/* Section 3: Date Range */}
-    <Typography variant="subtitle2" color="primary" sx={{ mt: 4 }} gutterBottom>
-      Leave Duration
-    </Typography>
-    <Divider sx={{ mb: 2 }} />
-
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          fullWidth
-          label="Start Date"
-          type="date"
-          name="startDate"
-          InputLabelProps={{ shrink: true }}
-          value={formData.startDate}
-          onChange={handleInputChange}
-          sx={{ bgcolor: "#f5f5f5" }}
-          required
-        />
-      </Grid>
-
-      <Grid item xs={12} sm={6}>
-        <TextField
-          fullWidth
-          label="End Date"
-          type="date"
-          name="endDate"
-          InputLabelProps={{ shrink: true }}
-          value={formData.endDate}
-          onChange={handleInputChange}
-          sx={{ bgcolor: "#f5f5f5" }}
-          required
-        />
-      </Grid>
-    </Grid>
+    <Button
+      variant="outlined"
+      onClick={() => setOpenDialog(false)}
+      sx={{
+        bgcolor: "#67BCE0",
+        ":hover": { bgcolor: "#ffffff" },
+        borderRadius: "60px",
+        border: "3px solid #000000",
+        color: "#000000",
+        textTransform: "none",
+        boxShadow: 2,
+        width: { xs: "100%", sm: "auto" },
+      }}
+    >
+      Cancel
+    </Button>
   </Box>
-</DialogContent>
+</DialogActions>
 
-
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-            <Button
-            variant="contained"
-            onClick={handleSubmit}
-            sx={{
-                bgcolor: "#512da8",
-                ":hover": { bgcolor: "#311b92" },
-                textTransform: "none",
-                boxShadow: 2,
-            }}
-            >
-            Submit
-            </Button>
-            <Button
-            variant="outlined"
-            onClick={() => setOpenDialog(false)}
-            sx={{ textTransform: "none" }}
-            >
-            Cancel
-            </Button>
-    </DialogActions>
-      </Dialog>
+        </Dialog>
+      </Box>
     </Box>
-</Box>
   );
 }
