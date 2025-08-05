@@ -12,6 +12,8 @@ import ProfileManagement from './pages/Admin/Ad_Profile';
 import AttendanceManagement from './pages/Admin/Ad_Attandance';
 import PerformanceManagement from './pages/Admin/Ad_Perfomance';
 import TaskManagement from './pages/Admin/Ad_Task';
+import Ad_ProfileForm from './pages/Admin/Ad_ProfileForm';
+import Ad_LeaveMang from './pages/Admin/Ad_LeaveMang';
 
 import Dashboard from './pages/Employee/Em_Dashboard';
 import Profile from './pages/Employee/Profile';
@@ -20,6 +22,7 @@ import Leave from './pages/Employee/Leave';
 import Performance from './pages/Employee/Perfomance';
 import Task from './pages/Employee/Task';
 import Equipment from './pages/Employee/Equipment';
+
 
 function App() {
   return (
@@ -31,7 +34,9 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="profile-management" element={<ProfileManagement />} />
+          <Route path="profile-form" element={<Ad_ProfileForm />} />
           <Route path="attendance-management" element={<AttendanceManagement />} />
+          <Route path="leave-management" element={<Ad_LeaveMang />} />
           <Route path="performance-management" element={<PerformanceManagement />} />
           <Route path="task-management" element={<TaskManagement />} />
         </Route>

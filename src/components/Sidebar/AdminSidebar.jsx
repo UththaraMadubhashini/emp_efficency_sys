@@ -1,4 +1,3 @@
-// src/components/Sidebar/AdminSidebar.jsx
 import { useState } from 'react';
 import {
   Drawer,
@@ -9,10 +8,10 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import { NavLink } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import GroupsIcon from '@mui/icons-material/Groups'; // Profile Management
-import EventAvailableIcon from '@mui/icons-material/EventAvailable'; // Attendance
-import BarChartIcon from '@mui/icons-material/BarChart'; // Performance
-import AssignmentIcon from '@mui/icons-material/Assignment'; // Task
+import GroupsIcon from '@mui/icons-material/Groups';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import AssignmentIcon from '@mui/icons-material/Assignment'; 
 import Logo from '../../assets/Logo.png';
 
 export default function AdminSidebar() {
