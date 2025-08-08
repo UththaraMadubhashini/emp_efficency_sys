@@ -150,7 +150,7 @@ export default function Attendance() {
               width: { xs: "100%", sm: "auto" },
                 flex: 1,
               }}
-              onClick={() => navigate("/leave")}
+              onClick={() => navigate("/employee/leave")}
             >
               Leave Request
             </Button>

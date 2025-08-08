@@ -1,0 +1,210 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #eee;
+}
+
+/* Container for both cards */
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center; /* centers the single card horizontally */
+  align-items: center;
+  gap: 40px;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+/* Common card style */
+.card {
+  position: relative;
+  width: 320px;
+  min-height: 540px;
+  border-radius: 24px;
+  box-shadow: 0 10px 20px rgb(0 0 0 / 0.12);
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+/* Wave shapes */
+.top-wave {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 240px;
+  background: #2d79f6;
+  border-bottom-left-radius: 100% 50%;
+  border-bottom-right-radius: 100% 50%;
+  z-index: 1;
+}
+
+.card.intro-card .top-wave {
+  background: #2d79f6;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
+}
+
+.card.login-card .top-wave {
+  background: #2d79f6;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
+}
+
+/* Content area inside card */
+.content {
+  position: relative;
+  padding: 180px 32px 32px 32px;
+  color: #2d79f6;
+  z-index: 2;
+  text-align: left;
+}
+
+/* Icon container on intro card */
+.icon-container {
+  background: rgba(69, 68, 180, 0.85);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 3px 10px rgba(69, 68, 180, 0.5);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+/* Typography */
+h2 {
+  margin: 0 0 12px 0;
+  font-weight: 700;
+  font-size: 28px;
+  color: #2d79f6;
+}
+
+p {
+  margin: 0;
+  font-weight: 400;
+  color: #7ba9e8;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+/* Buttons */
+.btn-outline {
+  margin: 20px 32px 32px 32px;
+  padding: 12px 24px;
+  border: 2px solid #67bce0;
+  background: transparent;
+  color: #67bce0;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: flex-end;
+}
+
+.btn-outline:hover {
+  background: #67bce0;
+  color: white;
+}
+
+/* Form inputs */
+form label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #2d79f6;
+}
+
+form input {
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1.5px solid #67bce0;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+form input:focus {
+  border-color: #2d79f6;
+  box-shadow: 0 0 8px #2d79f6aa;
+}
+
+/* Forgot password */
+.forgot-password {
+  text-align: right;
+  font-size: 14px;
+  color: #2d79f6;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+/* Social buttons container */
+.social-buttons {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.social-buttons button {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+  background: white;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: box-shadow 0.3s ease;
+}
+
+.social-buttons button:hover {
+  box-shadow: 0 4px 16px rgb(103 188 224 / 0.8);
+}
+
+.social-buttons img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Bottom section on login card */
+.bottom-section {
+  background: #2d79f6;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  padding: 12px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.bottom-section a {
+  color: #67bce0;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bottom-section a:hover {
+  text-decoration: underline;
+}

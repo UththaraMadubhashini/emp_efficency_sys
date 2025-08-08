@@ -17,8 +17,8 @@ import {
   useTheme,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import { useNavigate } from "react-router-dom";
 
-// ==== Styled Components ====
 
 const FilterRow = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -104,8 +104,6 @@ const ActionButtons = styled(Box)(() => ({
   flexWrap: "wrap",
 }));
 
-// ==== Components ====
-
 const EmployeeCard = ({ name = "Emp_Name", designation = "Designation" }) => (
   <CardContainer>
     <StyledAvatar />
@@ -156,6 +154,7 @@ const attendanceData = [
 // ==== Main Component ====
 
 export default function Attendance() {
+  const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -243,18 +242,19 @@ export default function Attendance() {
       {/* Buttons */}
       <ActionButtons>
         <Button
-          variant="outlined"
-          sx={{
-            bgcolor: "#74C0E3",
-                ":hover": { bgcolor: "#ffffff" },
-                border: "2px solid #000000",
-                borderRadius: "25px",
-                color: "#000",
-                px: 3,
-                textTransform: "none",
-                marginLeft: '950px',
-          }}
-        >
+        variant="outlined"
+        onClick={() => navigate('/admin/leave-management')}
+        sx={{
+          bgcolor: "#74C0E3",
+          ":hover": { bgcolor: "#ffffff" },
+          border: "2px solid #000000",
+          borderRadius: "25px",
+          color: "#000",
+          px: 3,
+          textTransform: "none",
+          marginLeft: '950px',
+        }}
+      >
           Leave
         </Button>
         <Button
