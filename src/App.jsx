@@ -16,13 +16,13 @@ import TaskManagement from './pages/Admin/Ad_Task';
 import Ad_ProfileForm from './pages/Admin/Ad_ProfileForm';
 import Ad_LeaveMang from './pages/Admin/Ad_LeaveMang';
 
-import Dashboard from './pages/Employee/Em_Dashboard';
-import Profile from './pages/Employee/Profile';
-import Attendance from './pages/Employee/Attandance';
-import Leave from './pages/Employee/Leave';
-import Performance from './pages/Employee/Perfomance';
-import Task from './pages/Employee/Task';
-import Equipment from './pages/Employee/Equipment';
+import Dashboard from './pages/Employee/Em_Dashboard/Em_Dashboard';
+import Profile from './pages/Employee/Em_Profile/Profile';
+import Attendance from './pages/Employee/Em_Attandance/Attandance';
+import Leave from './pages/Employee/Em_Leave/Leave';
+import Performance from './pages/Employee/Perfomance/Perfomance';
+import Task from './pages/Employee/Em_Task/Task';
+import Equipment from './pages/Employee/Em_Equipment/Equipment';
 
 
 
@@ -59,10 +59,6 @@ function App() {
           <Route path="performance" element={<Performance />} />
           <Route path="task" element={<Task />} />
           <Route path="equipment" element={<Equipment />} />
-
-
-          {/* Catch all - redirect to login */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
 
         </Route>
       </Routes>

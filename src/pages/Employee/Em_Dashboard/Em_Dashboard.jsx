@@ -31,7 +31,7 @@ const Dashboard = () => {
   const COLORS = ['#6659e8', '#78d1ec'];
 
   const handleCheckIn = () => {
-    navigate('/attendance');
+    navigate('/employee/attendance');
   };
 
   return (

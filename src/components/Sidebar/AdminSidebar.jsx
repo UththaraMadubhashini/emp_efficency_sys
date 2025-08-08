@@ -6,7 +6,7 @@ import {
   useMediaQuery
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupsIcon from '@mui/icons-material/Groups';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
@@ -18,6 +18,7 @@ export default function AdminSidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useMediaQuery('(max-width:768px)');
   const SIDEBAR_WIDTH = 250;
+  const location = useLocation();
 
   const toggleDrawer = () => setMobileOpen(!mobileOpen);
 
@@ -58,42 +59,50 @@ export default function AdminSidebar() {
             { to: '/admin/attendance-management', label: 'Attendance Management', icon: <EventAvailableIcon /> },
             { to: '/admin/performance-management', label: 'Performance Management', icon: <BarChartIcon /> },
             { to: '/admin/task-management', label: 'Task Management', icon: <AssignmentIcon /> },
-          ].map(({ to, label, icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={to === '/admin'}
-              style={({ isActive }) => ({
-                display: 'flex',
-                alignItems: 'center',
-                padding: '10px 14px',
-                margin: '10px',
-                textDecoration: 'none',
-                color: isActive ? '#ffffff' : '#000000',
-                fontWeight: 600,
-                fontSize: '14px',
-                backgroundColor: isActive ? '#0D07C0' : '#67BCE0',
-                borderRadius: '8px',
-                border: '2px solid',
-                borderColor: isActive ? '#000000' : 'white',
-                transition: '0.3s ease',
-                width: '206px',
-                
-              })}
-            >
-              <Box sx={{
-                minWidth: '24px',
-                display: 'flex',
-                justifyContent: 'center',
-                marginRight: '10px',
-                fontSize: '20px',
-                lineHeight: 1,
-              }}>
-                {icon}
-              </Box>
-              {label}
-            </NavLink>
-          ))}
+          ].map(({ to, label, icon }) => {
+            // Determine if link is active
+            let active = false;
+            if (to === '/admin') {
+              active = location.pathname === '/admin';
+            } else {
+              active = location.pathname.startsWith(to);
+            }
+
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '10px 14px',
+                  margin: '10px',
+                  textDecoration: 'none',
+                  color: active ? '#ffffff' : '#000000',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  backgroundColor: active ? '#0D07C0' : '#67BCE0',
+                  borderRadius: '8px',
+                  border: '2px solid',
+                  borderColor: active ? '#000000' : 'white',
+                  transition: '0.3s ease',
+                  width: '206px',
+                }}
+              >
+                <Box sx={{
+                  minWidth: '24px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginRight: '10px',
+                  fontSize: '20px',
+                  lineHeight: 1,
+                }}>
+                  {icon}
+                </Box>
+                {label}
+              </NavLink>
+            );
+          })}
         </nav>
       </div>
     </div>
