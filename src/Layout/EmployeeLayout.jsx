@@ -1,5 +1,4 @@
 import { Outlet } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
 import EmployeeSidebar from '../components/Sidebar/EmployeeSidebar';
 import Emp_Header from '../components/Header/Emp_Header';
 
