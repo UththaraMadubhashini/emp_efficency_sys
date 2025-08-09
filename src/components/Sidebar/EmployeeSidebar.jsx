@@ -7,7 +7,7 @@ import {
   useMediaQuery
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -19,10 +19,19 @@ import Logo from '../../assets/Logo.png';
 export default function EmployeeSidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useMediaQuery('(max-width:768px)');
+  const location = useLocation();
+  const SIDEBAR_WIDTH = 250;
 
   const toggleDrawer = () => setMobileOpen(!mobileOpen);
 
-  const SIDEBAR_WIDTH = 250;
+  const navItems = [
+    { to: '/employee', label: 'Dashboard', icon: <DashboardIcon /> },
+    { to: '/employee/profile', label: 'Profile', icon: <PersonIcon /> },
+    { to: '/employee/attendance', label: 'Attendance', icon: <CalendarMonthIcon /> },
+    { to: '/employee/performance', label: 'Performance', icon: <BarChartIcon /> },
+    { to: '/employee/task', label: 'Task', icon: <AssignmentIcon /> },
+    { to: '/employee/equipment', label: 'Equipment Identify', icon: <ConstructionIcon /> },
+  ];
 
   const sidebarContent = (
     <div
@@ -36,7 +45,6 @@ export default function EmployeeSidebar() {
         padding: '10px',
         marginTop: '-7px',
         marginLeft: '-7px',
-
       }}
     >
       <div style={{
@@ -66,45 +74,50 @@ export default function EmployeeSidebar() {
         }}
       >
         <nav>
-          {[
-            { to: '/', label: 'Dashboard', icon: <DashboardIcon /> },
-            { to: '/profile', label: 'Profile', icon: <PersonIcon /> },
-            { to: '/attendance', label: 'Attendance', icon: <CalendarMonthIcon /> },
-            { to: '/performance', label: 'Performance', icon: <BarChartIcon /> },
-            { to: '/task', label: 'Task', icon: <AssignmentIcon /> },
-            { to: '/equipment', label: 'Equipment Identify', icon: <ConstructionIcon /> },
-          ].map(({ to, label, icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={to === '/'}
-              style={({ isActive }) => ({
-                display: 'flex',
-                alignItems: 'center',
-                padding: '10px 14px',
-                margin: '8px 10px',
-                textDecoration: 'none',
-                color: isActive ? '#ffffff' : '#000000',
-                fontWeight: 600,
-                fontSize: '14px',
-                backgroundColor: isActive ? '#0D07C0' : '#67BCE0',
-                borderRadius: '8px',
-                border: '2px solid',
-                borderColor: isActive ? '#000000' : 'white',
-                transition: '0.3s ease',
-              })}
-            >
-              <Box sx={{ minWidth: '24px',      // reserve consistent space for icon
-      display: 'flex',
-      justifyContent: 'center',
-      marginRight: '10px',
-      fontSize: '20px',
-      lineHeight: 1, }}>
-                
-                {icon}</Box>
-              {label}
-            </NavLink>
-          ))}
+          {navItems.map(({ to, label, icon }) => {
+            // Fix active detection:
+            // Dashboard exact match
+            let active = false;
+            if (to === '/employee') {
+              active = location.pathname === '/employee';
+            } else {
+              active = location.pathname.startsWith(to);
+            }
+
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '10px 14px',
+                  margin: '8px 10px',
+                  textDecoration: 'none',
+                  color: active ? '#ffffff' : '#000000',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  backgroundColor: active ? '#0D07C0' : '#67BCE0',
+                  borderRadius: '8px',
+                  border: '2px solid',
+                  borderColor: active ? '#000000' : 'white',
+                  transition: '0.3s ease',
+                }}
+              >
+                <Box sx={{
+                  minWidth: '24px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginRight: '10px',
+                  fontSize: '20px',
+                  lineHeight: 1,
+                }}>
+                  {icon}
+                </Box>
+                {label}
+              </NavLink>
+            );
+          })}
         </nav>
       </div>
     </div>
