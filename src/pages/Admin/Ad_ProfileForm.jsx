@@ -19,6 +19,8 @@ import {
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTheme } from "@mui/material/styles";
+import { rtdb } from "../../firebase/firebase";
+import { ref, push, set } from "firebase/database";
 
 export default function Ad_ProfileForm({ isAdmin = true, mode = "add", defaultData = {} }) {
   const [photo, setPhoto] = useState(null);
@@ -48,18 +50,32 @@ export default function Ad_ProfileForm({ isAdmin = true, mode = "add", defaultDa
     sx: { "& .MuiFormLabel-asterisk": { color: "red" } }
   };
 
+  // Only one handleAddClick function now
   const handleAddClick = () => {
     const formData = getValues();
     setPendingAddData(formData);
     setOpenAddConfirmDialog(true);
   };
 
-  const handleAddConfirm = () => {
-    console.log("Add Employee:", pendingAddData);
-    setSnackbar({ open: true, message: "New employee added successfully." });
-    reset();
-    setOpenAddConfirmDialog(false);
-    setPendingAddData(null);
+  // Async function to add employee to Firebase
+  const handleAddConfirm = async () => {
+    try {
+      if (!pendingAddData) return;
+
+      const employeeRef = push(ref(rtdb, "employees"));
+      await set(employeeRef, {
+        ...pendingAddData,
+        createdAt: new Date().toISOString(),
+      });
+
+      setSnackbar({ open: true, message: "New employee added successfully." });
+      reset();
+      setOpenAddConfirmDialog(false);
+      setPendingAddData(null);
+    } catch (error) {
+      console.error("Error adding employee:", error);
+      setSnackbar({ open: true, message: "Error adding employee." });
+    }
   };
 
   const handleUpdateClick = () => {
@@ -117,7 +133,7 @@ export default function Ad_ProfileForm({ isAdmin = true, mode = "add", defaultDa
             <Typography fontWeight="bold" mb={1}>Employee Details</Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container direction="column" spacing={2}>
-              {[ "employeeId", "fullName", "address", "tel", "email", "password" ].map((field) => (
+              {["employeeId", "fullName", "address", "tel", "email", "password"].map((field) => (
                 <Grid item key={field}>
                   <TextField
                     label={field.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}
@@ -139,7 +155,7 @@ export default function Ad_ProfileForm({ isAdmin = true, mode = "add", defaultDa
             <Typography fontWeight="bold" mb={1}>Company Details</Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container direction="column" spacing={2}>
-              {[ "department", "designation" ].map((field) => (
+              {["department", "designation"].map((field) => (
                 <Grid item key={field}>
                   <TextField
                     label={field.charAt(0).toUpperCase() + field.slice(1)}
@@ -233,7 +249,7 @@ export default function Ad_ProfileForm({ isAdmin = true, mode = "add", defaultDa
         <DialogTitle>Update Employee Details</DialogTitle>
         <DialogContent dividers>
           <Grid container direction="column" spacing={2}>
-            {[ "employeeId", "fullName", "address", "tel", "email", "department", "designation" ].map((field) => (
+            {["employeeId", "fullName", "address", "tel", "email", "department", "designation"].map((field) => (
               <Grid item key={field}>
                 <TextField
                   label={field.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}
