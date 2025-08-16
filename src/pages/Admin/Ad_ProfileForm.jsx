@@ -38,25 +38,30 @@ export default function Ad_ProfileForm() {
   }, [setValue]);
 
   const handleAddEmployee = async () => {
-    const data = getValues();
-    try {
-      const employeeRef = push(ref(rtdb, "employees"));
-      await set(employeeRef, {
-        ...data,
-        createdAt: new Date().toISOString(),
-      });
-      setSnackbar({ open: true, message: "Employee added successfully.", severity: "success" });
-      reset();
-      // Generate next Employee ID after adding
-      const nextIdNumber = parseInt(autoEmpId.replace("EMP", ""), 10) + 1;
-      const nextId = "EMP" + nextIdNumber.toString().padStart(3, "0");
-      setAutoEmpId(nextId);
-      setValue("employeeId", nextId);
-    } catch (error) {
-      console.error("Error adding employee:", error);
-      setSnackbar({ open: true, message: "Failed to add employee.", severity: "error" });
-    }
-  };
+  const data = getValues(); // get all field values from react-hook-form
+  const { employeeId } = data;
+
+  if (!employeeId) {
+    setSnackbar({ open: true, message: "Employee ID is required", severity: "error" });
+    return;
+  }
+
+  try {
+    // Use employeeId as the Firebase key
+    const employeeRef = ref(rtdb, `employees/${employeeId}`);
+    await set(employeeRef, {
+      ...data,
+      createdAt: new Date().toISOString(),
+    });
+
+    setSnackbar({ open: true, message: "Employee added successfully.", severity: "success" });
+    reset(); // clear form
+  } catch (error) {
+    console.error("Error adding employee:", error);
+    setSnackbar({ open: true, message: "Failed to add employee.", severity: "error" });
+  }
+};
+
 
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", px: 2, py: 4 }}>
