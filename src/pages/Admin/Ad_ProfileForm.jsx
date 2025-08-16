@@ -1,234 +1,168 @@
+import React, { useEffect, useState } from "react";
 import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Divider,
-  Grid,
-  TextField,
-  Typography,
-  Snackbar,
-  Alert,
-  useMediaQuery,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText
+  Box, Button, Card, Divider, Grid, TextField, Typography, Snackbar, Alert,
+  useMediaQuery, MenuItem
 } from "@mui/material";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTheme } from "@mui/material/styles";
 import { rtdb } from "../../firebase/firebase";
-import { ref, push, set } from "firebase/database";
+import { ref, push, set, get, child } from "firebase/database";
 
-export default function Ad_ProfileForm({ isAdmin = true, mode = "add", defaultData = {} }) {
-  const [photo, setPhoto] = useState(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
-  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [openAddConfirmDialog, setOpenAddConfirmDialog] = useState(false);
-  const [pendingUpdateData, setPendingUpdateData] = useState(null);
-  const [pendingAddData, setPendingAddData] = useState(null);
-
+export default function Ad_ProfileForm() {
+  const { handleSubmit, reset, register, formState: { errors }, setValue, getValues } = useForm();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    getValues,
-    reset
-  } = useForm({ defaultValues: defaultData });
-
-  const isAddMode = mode === "add";
-
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+  const [autoEmpId, setAutoEmpId] = useState(""); // New state for auto Employee ID
   const whiteInputStyle = { backgroundColor: "#ffffff" };
-  const requiredLabelProps = {
-    required: true,
-    sx: { "& .MuiFormLabel-asterisk": { color: "red" } }
-  };
+  const requiredLabelProps = { required: true, sx: { "& .MuiFormLabel-asterisk": { color: "red" } } };
+  const departments = ["HR", "Finance", "IT", "Operations", "Marketing"];
 
-  // Only one handleAddClick function now
-  const handleAddClick = () => {
-    const formData = getValues();
-    setPendingAddData(formData);
-    setOpenAddConfirmDialog(true);
-  };
+  // Generate next Employee ID automatically
+  useEffect(() => {
+    const employeesRef = ref(rtdb, "employees");
+    get(employeesRef).then((snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const ids = Object.values(data).map(emp => parseInt(emp.employeeId.replace("EMP", ""), 10));
+        const nextId = Math.max(...ids) + 1;
+        const newId = "EMP" + nextId.toString().padStart(3, "0"); // EMP001, EMP002...
+        setAutoEmpId(newId);
+        setValue("employeeId", newId); // set default value in form
+      } else {
+        setAutoEmpId("EMP001");
+        setValue("employeeId", "EMP001");
+      }
+    });
+  }, [setValue]);
 
-  // Async function to add employee to Firebase
-  const handleAddConfirm = async () => {
+  const handleAddEmployee = async () => {
+    const data = getValues();
     try {
-      if (!pendingAddData) return;
-
       const employeeRef = push(ref(rtdb, "employees"));
       await set(employeeRef, {
-        ...pendingAddData,
+        ...data,
         createdAt: new Date().toISOString(),
       });
-
-      setSnackbar({ open: true, message: "New employee added successfully." });
+      setSnackbar({ open: true, message: "Employee added successfully.", severity: "success" });
       reset();
-      setOpenAddConfirmDialog(false);
-      setPendingAddData(null);
+      // Generate next Employee ID after adding
+      const nextIdNumber = parseInt(autoEmpId.replace("EMP", ""), 10) + 1;
+      const nextId = "EMP" + nextIdNumber.toString().padStart(3, "0");
+      setAutoEmpId(nextId);
+      setValue("employeeId", nextId);
     } catch (error) {
       console.error("Error adding employee:", error);
-      setSnackbar({ open: true, message: "Error adding employee." });
+      setSnackbar({ open: true, message: "Failed to add employee.", severity: "error" });
     }
   };
 
-  const handleUpdateClick = () => {
-    setOpenUpdateDialog(true);
-  };
-
-  const handleDialogOkClick = () => {
-    const updatedData = getValues();
-    setPendingUpdateData(updatedData);
-    setOpenUpdateDialog(false);
-    setOpenConfirmDialog(true);
-  };
-
-  const handleConfirm = () => {
-    console.log("Updated Data:", pendingUpdateData);
-    setSnackbar({ open: true, message: "Employee details updated by Admin." });
-    setOpenConfirmDialog(false);
-    setPendingUpdateData(null);
-  };
-
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        px: 2,
-        py: 4
-      }}
-    >
-      <Box
-        sx={{
-          width: "100%",
-          maxWidth: 600,
-          bgcolor: "#fff",
-          p: 3,
-          borderRadius: 2,
-          boxShadow: 3
-        }}
-      >
-        <form noValidate>
-          <Card sx={{ backgroundColor: "#e5f6fd", p: 2, mb: 2 }}>
-            <Grid container spacing={2} alignItems="center" direction={isMobile ? "column" : "row"}>
-              <Grid item>
-                <Avatar src={photo} sx={{ width: 60, height: 60 }} />
-              </Grid>
-              <Grid item xs>
-                <Typography>Employee Photo</Typography>
-              </Grid>
-            </Grid>
-          </Card>
-
+    <Box sx={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", px: 2, py: 4 }}>
+      <Box sx={{ width: "100%", maxWidth: 600, bgcolor: "#fff", p: 3, borderRadius: 2, boxShadow: 3 }}>
+        <form noValidate onSubmit={handleSubmit(handleAddEmployee)}>
+          {/* Employee Details */}
           <Card sx={{ backgroundColor: "#e5f6fd", p: 2, mb: 2 }}>
             <Typography fontWeight="bold" mb={1}>Employee Details</Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container direction="column" spacing={2}>
-              {["employeeId", "fullName", "address", "tel", "email", "password"].map((field) => (
+              <Grid item>
+                <TextField
+                  label="Employee ID"
+                  fullWidth
+                  size="small"
+                  {...register("employeeId")}
+                  value={autoEmpId} // show auto-generated ID
+                  InputProps={{ readOnly: true }}
+                  sx={whiteInputStyle}
+                />
+              </Grid>
+              {["fullName", "address", "tel", "email", "password"].map((field) => (
                 <Grid item key={field}>
                   <TextField
                     label={field.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}
+                    type={field === "password" ? "password" : "text"}
                     fullWidth
                     size="small"
-                    type={field === "password" ? "password" : "text"}
-                    disabled={!isAddMode}
-                    {...register(field, { required: true })}
+                    {...register(field, {
+                      required: `${field} is required`,
+                      pattern:
+                        field === "email"
+                          ? { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Invalid email format" }
+                          : field === "tel"
+                          ? { value: /^[0-9]{10}$/, message: "Phone must be 10 digits" }
+                          : undefined,
+                      minLength:
+                        field === "password"
+                          ? { value: 6, message: "Password must be at least 6 characters" }
+                          : undefined,
+                    })}
+                    error={!!errors[field]}
+                    helperText={errors[field]?.message}
                     InputLabelProps={requiredLabelProps}
                     sx={whiteInputStyle}
-                    error={!!errors[field]}
                   />
                 </Grid>
               ))}
             </Grid>
           </Card>
 
-          <Card sx={{ backgroundColor: "#e5f6fd", p: 2, mb: 2 }}>
+          {/* Company Details */}
+          <Card sx={{ backgroundColor: "#f1f8e9", p: 2, mb: 2 }}>
             <Typography fontWeight="bold" mb={1}>Company Details</Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container direction="column" spacing={2}>
-              {["department", "designation"].map((field) => (
-                <Grid item key={field}>
-                  <TextField
-                    label={field.charAt(0).toUpperCase() + field.slice(1)}
-                    fullWidth
-                    size="small"
-                    disabled={!isAddMode}
-                    {...register(field, { required: true })}
-                    InputLabelProps={requiredLabelProps}
-                    sx={whiteInputStyle}
-                    error={!!errors[field]}
-                  />
-                </Grid>
-              ))}
+              <Grid item>
+                <TextField
+                  select
+                  label="Department"
+                  fullWidth
+                  size="small"
+                  {...register("department", { required: "Department is required" })}
+                  error={!!errors.department}
+                  helperText={errors.department?.message}
+                  InputLabelProps={requiredLabelProps}
+                  sx={whiteInputStyle}
+                >
+                  {departments.map((dept) => (
+                    <MenuItem key={dept} value={dept}>{dept}</MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item>
+                <TextField
+                  label="Designation"
+                  fullWidth
+                  size="small"
+                  {...register("designation", { required: "Designation is required" })}
+                  error={!!errors.designation}
+                  helperText={errors.designation?.message}
+                  InputLabelProps={requiredLabelProps}
+                  sx={whiteInputStyle}
+                />
+              </Grid>
               <Grid item>
                 <TextField
                   label="Joining Date"
                   type="date"
                   fullWidth
                   size="small"
-                  disabled={!isAddMode}
-                  InputLabelProps={{ shrink: true, ...requiredLabelProps }}
-                  {...register("joiningDate", { required: true })}
+                  {...register("joiningDate", { required: "Joining Date is required" })}
                   error={!!errors.joiningDate}
+                  helperText={errors.joiningDate?.message}
+                  InputLabelProps={{ shrink: true, ...requiredLabelProps }}
                   sx={whiteInputStyle}
                 />
               </Grid>
             </Grid>
           </Card>
 
-          <Box
-            textAlign="right"
-            display="flex"
-            flexDirection={isMobile ? "column" : "row"}
-            gap={2}
-            justifyContent="flex-end"
-          >
-            {isAddMode ? (
-              <Button
-                type="button"
-                variant="contained"
-                onClick={handleAddClick}
-                sx={{
-                  borderRadius: "60px",
-                  textTransform: "none",
-                  bgcolor: "#2196F3",
-                  border: "3px solid #000000",
-                  color: "#fff",
-                  boxShadow: 2,
-                  ":hover": { bgcolor: "#1976D2" },
-                  width: isMobile ? "100%" : "auto"
-                }}
-              >
-                Add
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                variant="contained"
-                onClick={handleUpdateClick}
-                sx={{
-                  bgcolor: "#4CAF50",
-                  ":hover": { bgcolor: "#ffffff" },
-                  borderRadius: "60px",
-                  border: "3px solid #000000",
-                  color: "#000000",
-                  textTransform: "none",
-                  boxShadow: 2,
-                  width: isMobile ? "100%" : "auto"
-                }}
-              >
-                Update
-              </Button>
-            )}
+          {/* Add Button */}
+          <Box textAlign="right" display="flex" flexDirection={isMobile ? "column" : "row"} gap={2} justifyContent="flex-end">
+            <Button type="submit" variant="contained" sx={{ borderRadius: "60px", bgcolor: "#2196F3", color: "#fff" }}>
+              Add Employee
+            </Button>
           </Box>
         </form>
       </Box>
@@ -237,80 +171,13 @@ export default function Ad_ProfileForm({ isAdmin = true, mode = "add", defaultDa
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
-        onClose={() => setSnackbar({ open: false, message: "" })}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert severity="success" sx={{ width: "100%" }}>
+        <Alert severity={snackbar.severity} sx={{ width: "100%" }}>
           {snackbar.message}
         </Alert>
       </Snackbar>
-
-      {/* Update Dialog */}
-      <Dialog open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Update Employee Details</DialogTitle>
-        <DialogContent dividers>
-          <Grid container direction="column" spacing={2}>
-            {["employeeId", "fullName", "address", "tel", "email", "department", "designation"].map((field) => (
-              <Grid item key={field}>
-                <TextField
-                  label={field.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}
-                  fullWidth
-                  size="small"
-                  required
-                  {...register(field, { required: true })}
-                  error={!!errors[field]}
-                  InputLabelProps={requiredLabelProps}
-                  sx={{ backgroundColor: "#fff" }}
-                />
-              </Grid>
-            ))}
-            <Grid item>
-              <TextField
-                label="Joining Date"
-                type="date"
-                fullWidth
-                size="small"
-                required
-                InputLabelProps={{ shrink: true, ...requiredLabelProps }}
-                {...register("joiningDate", { required: true })}
-                error={!!errors.joiningDate}
-                sx={{ backgroundColor: "#fff" }}
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenUpdateDialog(false)}>Cancel</Button>
-          <Button onClick={handleDialogOkClick} autoFocus>OK</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Final Confirmation for Update */}
-      <Dialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)}>
-        <DialogTitle>Confirm Update</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to update this employee's profile?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirm} autoFocus>Confirm</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Confirmation for Add */}
-      <Dialog open={openAddConfirmDialog} onClose={() => setOpenAddConfirmDialog(false)}>
-        <DialogTitle>Confirm Add</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to add this new employee?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenAddConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleAddConfirm} autoFocus>Confirm</Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }
