@@ -36,8 +36,10 @@ export default function Ad_Profile() {
   const navigate = useNavigate();
 
   const [employees, setEmployees] = useState([]);
+  const [admins, setAdmins] = useState([]);
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [empIdFilter, setEmpIdFilter] = useState("");
+  const [tableType, setTableType] = useState("Employee"); // <-- Added
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
@@ -47,9 +49,10 @@ export default function Ad_Profile() {
 
   const departments = ["HR", "Food & Beverages", "IT", "FrontDesk", "HouseKeeping"];
 
+  // Fetch Employees
   useEffect(() => {
     const employeesRef = ref(rtdb, "employees");
-    const unsubscribe = onValue(employeesRef, (snapshot) => {
+    const unsubscribeEmp = onValue(employeesRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const employeesArray = Object.entries(data).map(([key, value]) => ({
@@ -61,17 +64,29 @@ export default function Ad_Profile() {
         setEmployees([]);
       }
     });
-    return () => unsubscribe();
+
+    const adminsRef = ref(rtdb, "admins");
+    const unsubscribeAdmin = onValue(adminsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const adminsArray = Object.entries(data).map(([key, value]) => ({
+          id: key,
+          ...value,
+        }));
+        setAdmins(adminsArray);
+      } else {
+        setAdmins([]);
+      }
+    });
+
+    return () => {
+      unsubscribeEmp();
+      unsubscribeAdmin();
+    };
   }, []);
 
-  const filteredEmployees = employees.filter((emp) => {
-    const matchesDept = departmentFilter ? emp.department === departmentFilter : true;
-    const matchesId = empIdFilter ? emp.employeeId === empIdFilter : true;
-    return matchesDept && matchesId;
-  });
-
   const handleUpdate = (id) => {
-    const emp = employees.find((e) => e.id === id);
+    const emp = (tableType === "Employee" ? employees : admins).find((e) => e.id === id);
     setSelectedEmployee(emp);
     setOpenEditDialog(true);
   };
@@ -82,14 +97,15 @@ export default function Ad_Profile() {
 
   const handleSaveUpdate = async () => {
     try {
-      await update(ref(rtdb, `employees/${selectedEmployee.id}`), {
+      const node = tableType === "Employee" ? "employees" : "admins";
+      await update(ref(rtdb, `${node}/${selectedEmployee.id}`), {
         ...selectedEmployee,
         updatedAt: new Date().toISOString(),
       });
-      setSnackbar({ open: true, message: "Employee updated successfully!", severity: "success" });
+      setSnackbar({ open: true, message: `${tableType} updated successfully!`, severity: "success" });
       setOpenEditDialog(false);
     } catch (error) {
-      setSnackbar({ open: true, message: "Failed to update employee: " + error.message, severity: "error" });
+      setSnackbar({ open: true, message: "Failed to update: " + error.message, severity: "error" });
     }
   };
 
@@ -97,8 +113,10 @@ export default function Ad_Profile() {
   const handleConfirmDelete = () => {
     const emp = deleteConfirm.employee;
     if (!emp) return;
-    setEmployees(employees.filter((e) => e.id !== emp.id));
-    setSnackbar({ open: true, message: `Employee ${emp.employeeId} removed from list!`, severity: "success" });
+    if (tableType === "Employee") setEmployees(employees.filter((e) => e.id !== emp.id));
+    else setAdmins(admins.filter((a) => a.id !== emp.id));
+
+    setSnackbar({ open: true, message: `${tableType} ${emp.employeeId} removed!`, severity: "success" });
     setDeleteConfirm({ open: false, employee: null });
   };
   const handleCancelDelete = () => setDeleteConfirm({ open: false, employee: null });
@@ -109,28 +127,51 @@ export default function Ad_Profile() {
     setPage(0);
   };
 
-  const paginatedEmployees = filteredEmployees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  // Filter and sort table data
+  const displayedData = (tableType === "Employee" ? employees : admins)
+    .filter((item) => {
+      if (tableType === "Employee") {
+        const matchesDept = departmentFilter ? item.department === departmentFilter : true;
+        const matchesId = empIdFilter ? item.employeeId === empIdFilter : true;
+        return matchesDept && matchesId;
+      } else {
+        return true; // show all admins
+      }
+    })
+    .sort((a, b) => b.employeeId.localeCompare(a.employeeId)); // descending
 
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h6" gutterBottom>
-        All Employees
+        All {tableType}s
       </Typography>
 
       {/* Filters & Add Button */}
       <Grid container spacing={2} alignItems="center" mb={3}>
         <Grid item xs={12} sm={3}>
-          <Select fullWidth displayEmpty value={departmentFilter} onChange={(e) => setDepartmentFilter(e.target.value)}>
-            <MenuItem value="">Department</MenuItem>
-            {departments.map((dep) => <MenuItem key={dep} value={dep}>{dep}</MenuItem>)}
+          <Select fullWidth value={tableType} onChange={(e) => setTableType(e.target.value)}>
+            <MenuItem value="Employee">Employee</MenuItem>
+            <MenuItem value="Admin">Admin</MenuItem>
           </Select>
         </Grid>
-        <Grid item xs={12} sm={3}>
-          <Select fullWidth displayEmpty value={empIdFilter} onChange={(e) => setEmpIdFilter(e.target.value)}>
-            <MenuItem value="">Emp_ID</MenuItem>
-            {employees.map((emp) => <MenuItem key={emp.id} value={emp.employeeId}>{emp.employeeId}</MenuItem>)}
-          </Select>
-        </Grid>
+
+        {tableType === "Employee" && (
+          <>
+            <Grid item xs={12} sm={3}>
+              <Select fullWidth displayEmpty value={departmentFilter} onChange={(e) => setDepartmentFilter(e.target.value)}>
+                <MenuItem value="">Department</MenuItem>
+                {departments.map((dep) => <MenuItem key={dep} value={dep}>{dep}</MenuItem>)}
+              </Select>
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <Select fullWidth displayEmpty value={empIdFilter} onChange={(e) => setEmpIdFilter(e.target.value)}>
+                <MenuItem value="">Emp_ID</MenuItem>
+                {employees.map((emp) => <MenuItem key={emp.id} value={emp.employeeId}>{emp.employeeId}</MenuItem>)}
+              </Select>
+            </Grid>
+          </>
+        )}
+
         <Grid item xs={12} sm={6}>
           <Box display="flex" justifyContent={isMobile ? "center" : "flex-end"}>
             <Button
@@ -139,7 +180,7 @@ export default function Ad_Profile() {
               onClick={() => navigate("/admin/profile-form")}
               sx={{ bgcolor: "#74C0E3", ":hover": { bgcolor: "#ffffff" }, border: "2px solid #000", borderRadius: "25px", color: "#000", px: 3, textTransform: "none" }}
             >
-              Add New Employee
+              Add New {tableType}
             </Button>
           </Box>
         </Grid>
@@ -157,12 +198,12 @@ export default function Ad_Profile() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedEmployees.length > 0 ? (
-              paginatedEmployees.map((emp) => (
-                <TableRow key={emp.id}>
+            {displayedData.length > 0 ? (
+              displayedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((emp) => (
+                <TableRow key={emp.id || emp.employeeId}>
                   <TableCell sx={{ border: "1px solid #999" }}>{emp.employeeId}</TableCell>
                   <TableCell sx={{ border: "1px solid #999" }}>{emp.fullName}</TableCell>
-                  <TableCell sx={{ border: "1px solid #999" }}>{emp.department}</TableCell>
+                  <TableCell sx={{ border: "1px solid #999" }}>{emp.department || "-"}</TableCell>
                   <TableCell align="center" sx={{ border: "1px solid #999" }}>
                     <IconButton color="primary" onClick={() => handleUpdate(emp.id)} sx={{ mr: 1 }}><Edit /></IconButton>
                     <IconButton color="error" onClick={() => handleDeleteClick(emp)}><Delete /></IconButton>
@@ -171,7 +212,7 @@ export default function Ad_Profile() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} align="center" sx={{ border: "1px solid #999" }}>No employees found.</TableCell>
+                <TableCell colSpan={4} align="center" sx={{ border: "1px solid #999" }}>No records found.</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -179,7 +220,7 @@ export default function Ad_Profile() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 15]}
           component="div"
-          count={filteredEmployees.length}
+          count={displayedData.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -199,9 +240,9 @@ export default function Ad_Profile() {
         </Alert>
       </Snackbar>
 
-      {/* Edit Employee Dialog */}
+      {/* Edit Employee/Admin Dialog */}
       <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ color: "#67BCE0", textAlign: "center", fontWeight: "bold", fontSize: "1.25rem", py: 2 }}>Edit Employee</DialogTitle>
+        <DialogTitle sx={{ color: "#67BCE0", textAlign: "center", fontWeight: "bold", fontSize: "1.25rem", py: 2 }}>Edit {tableType}</DialogTitle>
         <DialogContent sx={{ p: 3 }}>
           {selectedEmployee && (
             <Box sx={{ boxShadow: 3, p: 3, backgroundColor: "#fff", border: "5px solid #67BCE0", borderRadius: "20px" }}>
@@ -233,20 +274,28 @@ export default function Ad_Profile() {
           )}
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", p: 2 }}>
-          <Button onClick={() => setOpenEditDialog(false)} sx={{ bgcolor: "#67BCE0", ":hover": { bgcolor: "#fff" }, borderRadius: "60px", border: "3px solid #000", color: "#000", px: 4, textTransform:"none"}}>Cancel</Button>
-          <Button onClick={handleSaveUpdate} variant="contained" sx={{ bgcolor:"#4CAF50", ":hover":{bgcolor:"#fff"}, borderRadius:"60px", border:"3px solid #000", color:"#000", px:4, textTransform:"none"}}>Save</Button>
+          <Button onClick={() => setOpenEditDialog(false)} 
+          sx={{ bgcolor: "#67BCE0", ":hover": { bgcolor: "#fff" }, borderRadius: "60px", border: "3px solid #000", color: "#000", px: 4, textTransform:"none"}}>Cancel</Button>
+          <Button onClick={handleSaveUpdate} variant="contained" 
+          sx={{ bgcolor:"#4CAF50", ":hover":{bgcolor:"#fff"}, borderRadius:"60px", border:"3px solid #000", color:"#000", px:4, textTransform:"none"}}>Save</Button>
         </DialogActions>
       </Dialog>
 
-      {/* Redesigned Delete Confirmation Dialog */}
-      <Dialog open={deleteConfirm.open} onClose={handleCancelDelete} fullWidth maxWidth="xs">
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirm.open}
+        onClose={handleCancelDelete}
+        fullWidth
+        maxWidth="xs"
+        PaperProps={{ sx: { border: "3px solid #E53935", borderRadius: "20px", backgroundColor: "#FFEBEE" } }}
+      >
         <DialogTitle sx={{ color: "#E53935", textAlign: "center", fontWeight: "bold", fontSize: "1.3rem", py: 2 }}>Confirm Delete</DialogTitle>
-        <DialogContent sx={{ p:3, border: "3px solid #E53935", borderRadius: "20px", textAlign:"center", backgroundColor:"#FFEBEE" }}>
-          Are you sure you want to remove employee <strong>{deleteConfirm.employee?.employeeId}</strong> from the list?
+        <DialogContent sx={{ p: 3, textAlign: "center", fontFamily: "'Roboto', sans-serif", fontSize: "1.1rem", fontWeight: 500, color: "#000" }}>
+          Are you sure you want to remove {tableType} <strong>{deleteConfirm.employee?.employeeId}</strong> from the list?
         </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", pb:2 }}>
-          <Button onClick={handleCancelDelete} sx={{ bgcolor:"#B0BEC5", ":hover":{bgcolor:"#90A4AE"}, borderRadius:"30px", px:4, textTransform:"none", color:"#000" }}>Cancel</Button>
-          <Button onClick={handleConfirmDelete} sx={{ bgcolor:"#E53935", ":hover":{bgcolor:"#FF1744"}, borderRadius:"30px", px:4, textTransform:"none", color:"#fff" }}>Delete</Button>
+        <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
+          <Button onClick={handleCancelDelete} sx={{ bgcolor: "#B0BEC5", ":hover": { bgcolor: "#90A4AE" }, borderRadius: "60px", border: "3px solid #000", color: "#000", px: 4, textTransform: "none" }}>Cancel</Button>
+          <Button onClick={handleConfirmDelete} sx={{ bgcolor: "#E53935", ":hover": { bgcolor: "#FF1744" }, borderRadius: "60px", border: "3px solid #000", color: "#000", px: 4, textTransform: "none" }}>Delete</Button>
         </DialogActions>
       </Dialog>
     </Box>
